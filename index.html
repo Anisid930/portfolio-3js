@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Interactive 3D Portfolio - Explore my work in an immersive 3D experience">
+  <meta name="theme-color" content="#000000">
+  
+  <!-- Open Graph / Social Media -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="3D Portfolio">
+  <meta property="og:description" content="Interactive 3D Portfolio built with Three.js">
+  
+  <title>3D Portfolio</title>
+  <link rel="stylesheet" href="./src/styles/main.css">
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div class="loading-screen" id="loading-screen">
+    <div class="loading-bar">
+      <div class="loading-bar-fill" id="loading-bar-fill"></div>
+    </div>
+    <p class="loading-text">Loading Experience...</p>
+  </div>
+
+  <!-- Main Canvas -->
+  <canvas class="webgl" id="webgl"></canvas>
+
+  <!-- UI Overlay -->
+  <div class="ui-overlay">
+    <div class="instructions" id="instructions">
+      <p>Use <span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> or Arrow keys to move</p>
+      <p>Click to interact</p>
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

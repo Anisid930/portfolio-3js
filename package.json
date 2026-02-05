@@ -1,0 +1,30 @@
+{
+  "name": "portfolio-3js",
+  "version": "1.0.0",
+  "description": "Interactive 3D portfolio built with Three.js - inspired by Bruno Simon",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Anisid930/portfolio-3js.git"
+  },
+  "keywords": [
+    "threejs",
+    "3d",
+    "portfolio",
+    "webgl",
+    "interactive"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "three": "^0.160.0"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}
