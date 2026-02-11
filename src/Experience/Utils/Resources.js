@@ -35,14 +35,38 @@ export class Resources extends EventEmitter {
   }
 
   startLoading() {
-    // If no sources, immediately trigger ready
+    // If no sources, trigger ready after a short delay
+    // This ensures event listeners are set up first
     if (this.toLoad === 0) {
-      this.trigger('ready')
+      setTimeout(() => {
+        this.trigger('ready')
+      }, 100)
       return
     }
 
     // Update loading bar
     const loadingBarFill = document.getElementById('loading-bar-fill')
+    const loadingText = document.querySelector('.loading-text')
+
+    const updateBar = () => {
+      const pct = (this.loaded / this.toLoad) * 100
+      if (loadingBarFill) loadingBarFill.style.width = `${pct}%`
+    }
+
+    const onError = (source, err) => {
+      console.error(`❌ Failed to load ${source.type}: ${source.path}`, err)
+      if (loadingText) loadingText.textContent = `Error loading ${source.name}...`
+      // Count as loaded so we don't hang forever
+      this.sourceLoaded(source, null)
+      updateBar()
+    }
+
+    const onProgress = (source, xhr) => {
+      if (xhr.lengthComputable && loadingText) {
+        const mb = (xhr.loaded / 1048576).toFixed(1)
+        loadingText.textContent = `Loading ${source.name}... ${mb}MB`
+      }
+    }
 
     // Load each source
     for (const source of this.sources) {
@@ -50,36 +74,27 @@ export class Resources extends EventEmitter {
         case 'gltfModel':
           this.loaders.gltfLoader.load(
             source.path,
-            (file) => {
-              this.sourceLoaded(source, file)
-              if (loadingBarFill) {
-                loadingBarFill.style.width = `${(this.loaded / this.toLoad) * 100}%`
-              }
-            }
+            (file) => { this.sourceLoaded(source, file); updateBar() },
+            (xhr) => onProgress(source, xhr),
+            (err) => onError(source, err)
           )
           break
 
         case 'texture':
           this.loaders.textureLoader.load(
             source.path,
-            (file) => {
-              this.sourceLoaded(source, file)
-              if (loadingBarFill) {
-                loadingBarFill.style.width = `${(this.loaded / this.toLoad) * 100}%`
-              }
-            }
+            (file) => { this.sourceLoaded(source, file); updateBar() },
+            undefined,
+            (err) => onError(source, err)
           )
           break
 
         case 'cubeTexture':
           this.loaders.cubeTextureLoader.load(
             source.path,
-            (file) => {
-              this.sourceLoaded(source, file)
-              if (loadingBarFill) {
-                loadingBarFill.style.width = `${(this.loaded / this.toLoad) * 100}%`
-              }
-            }
+            (file) => { this.sourceLoaded(source, file); updateBar() },
+            undefined,
+            (err) => onError(source, err)
           )
           break
       }

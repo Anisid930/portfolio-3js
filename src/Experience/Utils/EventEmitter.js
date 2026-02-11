@@ -29,14 +29,22 @@ export class EventEmitter {
     // Split event name with namespace
     const names = eventName.split('.')
     const name = names[0]
-    const namespace = names.length > 1 ? names[1] : 'base'
+    const namespace = names.length > 1 ? names[1] : ''
 
-    // Remove specific event in namespace
-    if (name !== '' && this.callbacks[namespace] && this.callbacks[namespace][name]) {
-      delete this.callbacks[namespace][name]
-    }
-    // Remove all events in namespace
-    else if (names.length === 1) {
+    if (name && namespace) {
+      // Remove specific event in specific namespace: 'event.ns'
+      if (this.callbacks[namespace]?.[name]) {
+        delete this.callbacks[namespace][name]
+      }
+    } else if (name) {
+      // Remove event from ALL namespaces: 'event'
+      for (const ns in this.callbacks) {
+        if (this.callbacks[ns][name]) {
+          delete this.callbacks[ns][name]
+        }
+      }
+    } else if (namespace) {
+      // Remove entire namespace: '.ns'
       delete this.callbacks[namespace]
     }
 

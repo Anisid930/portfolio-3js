@@ -1,29 +1,7 @@
 /**
- * Resources to load
- * Add your 3D models, textures, and other assets here
+ * TobaTech Jungle - Resources Configuration
+ * Production-ready asset loading for the 3D portfolio
+ * 
+ * Forest GLB is lazy-loaded on demand (see World.js) to speed up initial load.
  */
-export const sources = [
-  // Example entries (uncomment and modify as needed):
-  // {
-  //   name: 'environmentMapTexture',
-  //   type: 'cubeTexture',
-  //   path: [
-  //     'textures/environmentMap/px.jpg',
-  //     'textures/environmentMap/nx.jpg',
-  //     'textures/environmentMap/py.jpg',
-  //     'textures/environmentMap/ny.jpg',
-  //     'textures/environmentMap/pz.jpg',
-  //     'textures/environmentMap/nz.jpg'
-  //   ]
-  // },
-  // {
-  //   name: 'carModel',
-  //   type: 'gltfModel',
-  //   path: 'models/car.glb'
-  // },
-  // {
-  //   name: 'floorTexture',
-  //   type: 'texture',
-  //   path: 'textures/floor/color.jpg'
-  // }
-]
+export const sources = []

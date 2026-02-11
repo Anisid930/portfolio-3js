@@ -22,6 +22,10 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "cannon-es": "^0.20.0",
+    "gsap": "^3.14.2",
+    "howler": "^2.2.4",
+    "postprocessing": "^6.38.2",
     "three": "^0.160.0"
   },
   "devDependencies": {

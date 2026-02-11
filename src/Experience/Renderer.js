@@ -15,28 +15,29 @@ export class Renderer {
   setInstance() {
     this.instance = new THREE.WebGLRenderer({
       canvas: this.canvas,
-      antialias: true,
-      alpha: false
+      antialias: false,
+      alpha: false,
+      powerPreference: 'high-performance'
     })
     this.instance.setSize(this.sizes.width, this.sizes.height)
-    this.instance.setPixelRatio(Math.min(this.sizes.pixelRatio, 2))
+    this.instance.setPixelRatio(1) // Force 1x for performance
     
-    // Tone mapping and color
+    // Tone mapping
     this.instance.toneMapping = THREE.ACESFilmicToneMapping
-    this.instance.toneMappingExposure = 1
+    this.instance.toneMappingExposure = 1.1
     this.instance.outputColorSpace = THREE.SRGBColorSpace
     
-    // Shadows
+    // Shadows - use basic for performance
     this.instance.shadowMap.enabled = true
-    this.instance.shadowMap.type = THREE.PCFSoftShadowMap
+    this.instance.shadowMap.type = THREE.BasicShadowMap
     
     // Background
-    this.instance.setClearColor('#1a1a2e')
+    this.instance.setClearColor('#87ceeb')
   }
 
   resize() {
     this.instance.setSize(this.sizes.width, this.sizes.height)
-    this.instance.setPixelRatio(Math.min(this.sizes.pixelRatio, 2))
+    this.instance.setPixelRatio(1)
   }
 
   update() {
