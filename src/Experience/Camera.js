@@ -21,22 +21,22 @@ export class Camera {
       45,
       this.sizes.width / this.sizes.height,
       0.1,
-      2000
+      5000
     )
-    this.instance.position.set(0, 10, 20)
+    this.instance.position.set(0, 30, 60)
     this.instance.lookAt(0, 0, 0)
     this.scene.add(this.instance)
   }
 
   setThirdPerson() {
     this.thirdPerson = new ThirdPersonCamera(this.instance, this.canvas, {
-      distance: 12,
-      height: 5,
+      distance: 30,
+      height: 15,
       smoothing: 0.08,
       minPolarAngle: -0.3,
       maxPolarAngle: 1.4,
-      minDistance: 3,
-      maxDistance: 200
+      minDistance: 8,
+      maxDistance: 800
     })
   }
 

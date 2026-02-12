@@ -24,17 +24,27 @@ export class TestEnvironment {
     this.particles = []
     this.portals = []
     this.landmarks = []
+    this.zoneLabels = [] // Floating text labels
 
     // ── Zone Config (level design doc) ──
+    // PORTFOLIO SERVICE AREAS:
+    // HUB  = Welcome/Landing - Central portfolio showcase
+    // Z1   = IT Services - Software dev, web apps, APIs, backend
+    // Z2   = Game Development - Unity, Unreal, mobile games
+    // Z3   = AI & Automation - ML, chatbots, RPA, data analytics
+    // Z4   = Media Production - Video, motion graphics, VFX, 3D
+    // Z5   = Digital Marketing - SEO, social media, ads, content
+    // Z6   = About/Team - Company story, values, team members
+    // Z7   = Contact - Contact form, social links, booking
     this.zones = {
-      HUB: { name: 'The Nexus Clearing', center: new THREE.Vector3(0, 0, 0),    radius: 8, color: 0xFFD700, elevation: 0 },
-      Z1:  { name: 'CodeForge Ruins',    center: new THREE.Vector3(0, 0, -18),   radius: 7, color: 0x4A90D9, elevation: -0.5 },
-      Z2:  { name: 'Pixel Grove',        center: new THREE.Vector3(-18, 0, 0),   radius: 7, color: 0x9B59B6, elevation: 1.5 },
-      Z3:  { name: 'Neural Cavern',      center: new THREE.Vector3(18, 0, 0),    radius: 7, color: 0xE91E63, elevation: -1 },
-      Z4:  { name: 'Lumina Falls',       center: new THREE.Vector3(-15, 0, 18),  radius: 7, color: 0xFF9800, elevation: 3 },
-      Z5:  { name: 'Beacon Spire',       center: new THREE.Vector3(15, 0, 18),   radius: 7, color: 0x4CAF50, elevation: 2 },
-      Z6:  { name: 'Origin Tree',        center: new THREE.Vector3(-10, 0, 30),  radius: 6, color: 0xFFB74D, elevation: 5 },
-      Z7:  { name: 'Echo Chamber',       center: new THREE.Vector3(10, 0, 30),   radius: 5, color: 0x26C6DA, elevation: 4 },
+      HUB: { name: 'The Nexus Clearing',   center: new THREE.Vector3(0, 0, 0),      radius: 24, color: 0xFFD700, elevation: 0 },
+      Z1:  { name: 'CodeForge Ruins',      center: new THREE.Vector3(0, 0, -180),    radius: 21, color: 0x4A90D9, elevation: -1.5 },
+      Z2:  { name: 'Pixel Grove',          center: new THREE.Vector3(-180, 0, 0),    radius: 21, color: 0x9B59B6, elevation: 4.5 },
+      Z3:  { name: 'Neural Cavern',        center: new THREE.Vector3(180, 0, 0),     radius: 21, color: 0xE91E63, elevation: -3 },
+      Z4:  { name: 'Lumina Falls',         center: new THREE.Vector3(-150, 0, 180),  radius: 21, color: 0xFF9800, elevation: 9 },
+      Z5:  { name: 'Beacon Spire',         center: new THREE.Vector3(150, 0, 180),   radius: 21, color: 0x4CAF50, elevation: 6 },
+      Z6:  { name: 'Origin Tree',          center: new THREE.Vector3(-100, 0, 300),  radius: 18, color: 0xFFB74D, elevation: 15 },
+      Z7:  { name: 'Echo Chamber',         center: new THREE.Vector3(100, 0, 300),   radius: 15, color: 0x26C6DA, elevation: 12 },
     }
 
     // Shared material pool (optimization)
@@ -58,6 +68,7 @@ export class TestEnvironment {
     this._buildBoundaryWalls()
     this._buildParticles()
     this._buildSpawnMarker()
+    this._buildZoneLabels()
 
     this.scene.add(this.group)
 
@@ -149,7 +160,7 @@ export class TestEnvironment {
   // ═══════════════════════════════════════
 
   _buildTerrain() {
-    const size = 100, segs = 32
+    const size = 1000, segs = 64
     const geo = new THREE.PlaneGeometry(size, size, segs, segs)
     geo.rotateX(-Math.PI / 2)
 
@@ -160,8 +171,8 @@ export class TestEnvironment {
 
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i), z = pos.getZ(i)
-      let y = Math.sin(x * 0.08) * Math.cos(z * 0.06) * 0.6
-        + Math.sin(x * 0.15 + z * 0.12) * 0.3
+      let y = Math.sin(x * 0.008) * Math.cos(z * 0.006) * 6
+        + Math.sin(x * 0.015 + z * 0.012) * 3
 
       tmp.copy(baseColor)
       for (const zone of Object.values(this.zones)) {
@@ -211,15 +222,27 @@ export class TestEnvironment {
   _buildPaths() {
     const pathMat = this._mat('path', 0x8B7355, { roughness: 0.9 })
     const paths = [
-      { from: [0, 0, 5], to: [0, 0, -11], w: 2.5 },
-      { from: [0, 0, -11], to: [0, 0, -4], w: 2.5 },
-      { from: [-4, 0, 0], to: [-11, 0, 0], w: 2 },
-      { from: [4, 0, 0], to: [11, 0, 0], w: 2 },
-      { from: [-3, 0, 3], to: [-12, 0, 15], w: 1.8 },
-      { from: [3, 0, 3], to: [12, 0, 15], w: 1.8 },
-      { from: [-13, 0, 22], to: [-10, 0, 26], w: 1.5 },
-      { from: [13, 0, 22], to: [10, 0, 26], w: 1.5 },
-      { from: [-5, 0, 30], to: [5, 0, 30], w: 1.2 },
+      // HUB to Z1 (north)
+      { from: [0, 0, 50], to: [0, 0, -110], w: 8 },
+      { from: [0, 0, -110], to: [0, 0, -160], w: 8 },
+      // HUB to Z2 (west)
+      { from: [-40, 0, 0], to: [-110, 0, 0], w: 6 },
+      { from: [-110, 0, 0], to: [-160, 0, 0], w: 6 },
+      // HUB to Z3 (east)
+      { from: [40, 0, 0], to: [110, 0, 0], w: 6 },
+      { from: [110, 0, 0], to: [160, 0, 0], w: 6 },
+      // HUB to Z4 (southwest)
+      { from: [-30, 0, 30], to: [-120, 0, 150], w: 5 },
+      { from: [-120, 0, 150], to: [-140, 0, 170], w: 5 },
+      // HUB to Z5 (southeast)
+      { from: [30, 0, 30], to: [120, 0, 150], w: 5 },
+      { from: [120, 0, 150], to: [140, 0, 170], w: 5 },
+      // Z4 to Z6
+      { from: [-130, 0, 220], to: [-100, 0, 280], w: 4 },
+      // Z5 to Z7
+      { from: [130, 0, 220], to: [100, 0, 280], w: 4 },
+      // Z6 to Z7 (back path)
+      { from: [-80, 0, 300], to: [80, 0, 300], w: 4 },
     ]
 
     paths.forEach(p => {
@@ -925,7 +948,7 @@ export class TestEnvironment {
 
   _buildTrees() {
     const positions = []
-    const worldSize = 45, attempts = 200, minZone = 9, minTree = 2.5
+    const worldSize = 450, attempts = 600, minZone = 35, minTree = 8
 
     for (let i = 0; i < attempts; i++) {
       const x = (Math.random() - 0.5) * worldSize * 2
@@ -943,18 +966,18 @@ export class TestEnvironment {
       if (!tooClose) positions.push([x, z])
     }
 
-    const trunkGeo = new THREE.CylinderGeometry(0.1, 0.2, 2.5, 4)
+    const trunkGeo = new THREE.CylinderGeometry(0.3, 0.6, 8, 4)
     const trunkInst = new THREE.InstancedMesh(trunkGeo, this._mat('trunk', 0x5c3a1a, { roughness: 0.95 }), positions.length)
     trunkInst.castShadow = true; trunkInst.receiveShadow = true
 
-    const canopyGeo = new THREE.IcosahedronGeometry(1.2, 0)
+    const canopyGeo = new THREE.IcosahedronGeometry(3.6, 0)
     const canopyInst = new THREE.InstancedMesh(canopyGeo, this._mat('treecanopy', 0x1B5E20, { roughness: 0.85 }), positions.length)
     canopyInst.castShadow = true
 
     const dummy = new THREE.Object3D()
     positions.forEach(([x, z], i) => {
       const scale = 0.6 + Math.random() * 0.8
-      const trunkH = 2.5 * scale
+      const trunkH = 8 * scale
 
       dummy.position.set(x, trunkH / 2, z)
       dummy.scale.set(scale, scale, scale)
@@ -962,13 +985,13 @@ export class TestEnvironment {
       dummy.updateMatrix()
       trunkInst.setMatrixAt(i, dummy.matrix)
 
-      dummy.position.set(x, trunkH + 0.8 * scale, z)
+      dummy.position.set(x, trunkH + 2.4 * scale, z)
       dummy.scale.set(scale * 1.2, scale * (0.8 + Math.random() * 0.5), scale * 1.2)
       dummy.updateMatrix()
       canopyInst.setMatrixAt(i, dummy.matrix)
 
       if (scale > 0.8) {
-        const tShape = new CANNON.Cylinder(0.15 * scale, 0.25 * scale, trunkH, 4)
+        const tShape = new CANNON.Cylinder(0.45 * scale, 0.75 * scale, trunkH, 4)
         const tBody = new CANNON.Body({ mass: 0, shape: tShape, material: this.physics.defaultMaterial })
         tBody.position.set(x, trunkH / 2, z)
         this.physics.world.addBody(tBody)
@@ -986,15 +1009,15 @@ export class TestEnvironment {
   // ═══════════════════════════════════════
 
   _buildRocks() {
-    const count = 40
-    const geo = new THREE.DodecahedronGeometry(1, 0)
+    const count = 150
+    const geo = new THREE.DodecahedronGeometry(3, 0)
     const inst = new THREE.InstancedMesh(geo, this._mat('rock', 0x5a5a5a, { roughness: 0.95 }), count)
     inst.castShadow = false; inst.receiveShadow = true
 
     const dummy = new THREE.Object3D()
     for (let i = 0; i < count; i++) {
-      const x = (Math.random() - 0.5) * 84, z = (Math.random() - 0.5) * 84
-      const s = 0.15 + Math.random() * 0.4
+      const x = (Math.random() - 0.5) * 840, z = (Math.random() - 0.5) * 840
+      const s = 0.3 + Math.random() * 0.8
       dummy.position.set(x, s * 0.3, z)
       dummy.scale.set(s * (0.8 + Math.random() * 0.4), s * 0.5, s * (0.8 + Math.random() * 0.4))
       dummy.rotation.set(Math.random(), Math.random(), Math.random())
@@ -1009,14 +1032,14 @@ export class TestEnvironment {
   // ═══════════════════════════════════════
 
   _buildBoundaryWalls() {
-    const S = 50, wallH = 4
+    const S = 500, wallH = 20
     const defs = [
-      { pos: [0, wallH / 2, -S], size: [S * 2, wallH, 0.5] },
-      { pos: [0, wallH / 2, S], size: [S * 2, wallH, 0.5] },
-      { pos: [-S, wallH / 2, 0], size: [0.5, wallH, S * 2] },
-      { pos: [S, wallH / 2, 0], size: [0.5, wallH, S * 2] },
+      { pos: [0, wallH / 2, -S], size: [S * 2, wallH, 2] },
+      { pos: [0, wallH / 2, S], size: [S * 2, wallH, 2] },
+      { pos: [-S, wallH / 2, 0], size: [2, wallH, S * 2] },
+      { pos: [S, wallH / 2, 0], size: [2, wallH, S * 2] },
     ]
-    const fogMat = new THREE.MeshBasicMaterial({ color: 0x2d4a3d, transparent: true, opacity: 0.15, side: THREE.DoubleSide })
+    const fogMat = new THREE.MeshBasicMaterial({ color: 0x2d4a3d, transparent: true, opacity: 0.2, side: THREE.DoubleSide })
 
     defs.forEach(w => {
       const shape = new CANNON.Box(new CANNON.Vec3(w.size[0] / 2, w.size[1] / 2, w.size[2] / 2))
@@ -1039,13 +1062,13 @@ export class TestEnvironment {
 
   _buildParticles() {
     // ── Fireflies ──
-    const ffCount = 40
+    const ffCount = 100
     const ffGeo = new THREE.BufferGeometry()
     const ffPos = new Float32Array(ffCount * 3)
     const ffSpeeds = []
     for (let i = 0; i < ffCount; i++) {
-      ffPos[i * 3] = (Math.random() - 0.5) * 60
-      ffPos[i * 3 + 1] = 0.5 + Math.random() * 4
+      ffPos[i * 3] = (Math.random() - 0.5) * 600
+      ffPos[i * 3 + 1] = 1.5 + Math.random() * 12
       ffPos[i * 3 + 2] = (Math.random() - 0.5) * 60
       ffSpeeds.push({
         sx: (Math.random() - 0.5) * 0.02,
@@ -1064,24 +1087,24 @@ export class TestEnvironment {
     this.particles.push({ points: fireflies, speeds: ffSpeeds, type: 'firefly' })
 
     // ── Pollen ──
-    const pCount = 25
+    const pCount = 60
     const pGeo = new THREE.BufferGeometry()
     const pPos = new Float32Array(pCount * 3)
     const pSpeeds = []
     for (let i = 0; i < pCount; i++) {
-      pPos[i * 3] = (Math.random() - 0.5) * 50
-      pPos[i * 3 + 1] = 1 + Math.random() * 6
-      pPos[i * 3 + 2] = (Math.random() - 0.5) * 50
+      pPos[i * 3] = (Math.random() - 0.5) * 500
+      pPos[i * 3 + 1] = 3 + Math.random() * 18
+      pPos[i * 3 + 2] = (Math.random() - 0.5) * 500
       pSpeeds.push({
-        sx: (Math.random() - 0.5) * 0.005,
-        sy: Math.random() * 0.003,
-        sz: (Math.random() - 0.5) * 0.005,
+        sx: (Math.random() - 0.5) * 0.02,
+        sy: Math.random() * 0.01,
+        sz: (Math.random() - 0.5) * 0.02,
         phase: Math.random() * Math.PI * 2,
       })
     }
     pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3))
     const pollen = new THREE.Points(pGeo, new THREE.PointsMaterial({
-      color: 0xffffff, size: 0.08, transparent: true, opacity: 0.5,
+      color: 0xffffff, size: 0.3, transparent: true, opacity: 0.5,
       sizeAttenuation: true, depthWrite: false,
     }))
     pollen.name = 'Pollen'
@@ -1094,20 +1117,92 @@ export class TestEnvironment {
   // ═══════════════════════════════════════
 
   _buildSpawnMarker() {
-    const ringGeo = new THREE.RingGeometry(0.6, 0.8, 16)
+    const ringGeo = new THREE.RingGeometry(2, 2.5, 16)
     ringGeo.rotateX(-Math.PI / 2)
     const ring = new THREE.Mesh(ringGeo, this._bmat('spawn', 0x00E676, { transparent: true, opacity: 0.4 }))
-    ring.position.set(0, 0.05, 5)
+    ring.position.set(0, 0.15, 50)
     this.group.add(ring)
     this.animatedObjects.push({ mesh: ring, type: 'pulse', speed: 0.6 })
 
-    const dotGeo = new THREE.CircleGeometry(0.3, 8)
+    const dotGeo = new THREE.CircleGeometry(1, 8)
     dotGeo.rotateX(-Math.PI / 2)
     const dot = new THREE.Mesh(dotGeo, this._bmat('spawndot', 0x00E676, { transparent: true, opacity: 0.25 }))
-    dot.position.set(0, 0.06, 5)
+    dot.position.set(0, 0.16, 50)
     this.group.add(dot)
 
-    this._addLight(this.group, 0x00E676, 0.5, 5, 2, 0, 1, 5)
+    this._addLight(this.group, 0x00E676, 1.5, 15, 2, 0, 3, 50)
+  }
+
+  // ═══════════════════════════════════════
+  // FLOATING ZONE LABELS
+  // ═══════════════════════════════════════
+
+  _buildZoneLabels() {
+    for (const [id, zone] of Object.entries(this.zones)) {
+      const label = this._createTextSprite(zone.name, zone.color)
+      label.position.set(zone.center.x, zone.elevation + 25, zone.center.z)
+      label.userData = { baseY: zone.elevation + 25, phase: Math.random() * Math.PI * 2 }
+      this.group.add(label)
+      this.zoneLabels.push(label)
+    }
+  }
+
+  /**
+   * Create a canvas-based text sprite (always faces camera)
+   */
+  _createTextSprite(text, color) {
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    
+    canvas.width = 512
+    canvas.height = 128
+    
+    // Background (subtle gradient)
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height)
+    gradient.addColorStop(0, 'rgba(0,0,0,0)')
+    gradient.addColorStop(0.5, 'rgba(0,0,0,0.3)')
+    gradient.addColorStop(1, 'rgba(0,0,0,0)')
+    ctx.fillStyle = gradient
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    
+    // Text styling
+    ctx.font = 'bold 48px Georgia, serif'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    
+    // Glow effect
+    ctx.shadowColor = `#${color.toString(16).padStart(6, '0')}`
+    ctx.shadowBlur = 20
+    ctx.shadowOffsetX = 0
+    ctx.shadowOffsetY = 0
+    
+    // Outline
+    ctx.strokeStyle = '#1a1a2e'
+    ctx.lineWidth = 6
+    ctx.strokeText(text, canvas.width / 2, canvas.height / 2)
+    
+    // Fill with zone color
+    const hexColor = `#${color.toString(16).padStart(6, '0')}`
+    ctx.fillStyle = hexColor
+    ctx.fillText(text, canvas.width / 2, canvas.height / 2)
+    
+    // Create texture and sprite
+    const texture = new THREE.CanvasTexture(canvas)
+    texture.minFilter = THREE.LinearFilter
+    
+    const material = new THREE.SpriteMaterial({
+      map: texture,
+      transparent: true,
+      opacity: 0.9,
+      depthTest: true,
+      depthWrite: false,
+    })
+    
+    const sprite = new THREE.Sprite(material)
+    sprite.scale.set(24, 6, 1) // Larger scale for bigger world
+    sprite.name = `Label_${text}`
+    
+    return sprite
   }
 
   // ═══════════════════════════════════════
@@ -1202,13 +1297,19 @@ export class TestEnvironment {
           pos.array[i * 3] += sp.sx
           pos.array[i * 3 + 1] += Math.sin(t * 0.5 + sp.phase) * sp.sy
           pos.array[i * 3 + 2] += sp.sz
-          if (pos.array[i * 3] > 25) pos.array[i * 3] = -25
-          if (pos.array[i * 3] < -25) pos.array[i * 3] = 25
-          if (pos.array[i * 3 + 2] > 25) pos.array[i * 3 + 2] = -25
-          if (pos.array[i * 3 + 2] < -25) pos.array[i * 3 + 2] = 25
+          if (pos.array[i * 3] > 250) pos.array[i * 3] = -250
+          if (pos.array[i * 3] < -250) pos.array[i * 3] = 250
+          if (pos.array[i * 3 + 2] > 250) pos.array[i * 3 + 2] = -250
+          if (pos.array[i * 3 + 2] < -250) pos.array[i * 3 + 2] = 250
         }
       }
       pos.needsUpdate = true
+    }
+
+    // ── Floating zone labels ──
+    for (const label of this.zoneLabels) {
+      const { baseY, phase } = label.userData
+      label.position.y = baseY + Math.sin(t * 0.5 + phase) * 1.5
     }
 
     // ── Dynamic meshes ──
@@ -1228,10 +1329,10 @@ export class TestEnvironment {
     this.physics.removeZoneColliders()
 
     this.group.traverse(child => {
-      if (child.isMesh || child.isInstancedMesh || child.isLine || child.isPoints) {
+      if (child.isMesh || child.isInstancedMesh || child.isLine || child.isPoints || child.isSprite) {
         child.geometry?.dispose()
-        if (Array.isArray(child.material)) child.material.forEach(m => m.dispose())
-        else child.material?.dispose()
+        if (Array.isArray(child.material)) child.material.forEach(m => { m.map?.dispose(); m.dispose() })
+        else { child.material?.map?.dispose(); child.material?.dispose() }
       }
     })
 
@@ -1243,6 +1344,7 @@ export class TestEnvironment {
     this.portals = []
     this.landmarks = []
     this.dynamicMeshes = []
+    this.zoneLabels = []
     console.log('🧹 Production World disposed')
   }
 }

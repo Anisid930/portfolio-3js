@@ -42,7 +42,7 @@ export class ThirdPersonCamera {
     this.overviewMode = false
     this.savedDistance = this.settings.distance
     this.savedPhi = 0.5
-    this.overviewDistance = 120
+    this.overviewDistance = 600
     this.overviewPhi = 1.3  // near top-down
 
     // Mouse/touch input

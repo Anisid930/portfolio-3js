@@ -92,8 +92,8 @@ export class Player {
     this.rightLeg.position.set(0.12, 0.12, 0)
     this.mesh.add(this.rightLeg)
 
-    // Start position
-    this.mesh.position.set(0, 2, 5)
+    // Start position (near spawn marker in larger world)
+    this.mesh.position.set(0, 6, 50)
     this.scene.add(this.mesh)
   }
 
@@ -103,7 +103,7 @@ export class Player {
     this.body = new CANNON.Body({
       mass: 5,
       shape,
-      position: new CANNON.Vec3(0, 2, 5),
+      position: new CANNON.Vec3(0, 6, 50),
       linearDamping: 0.3,
       angularDamping: 0.99,
       fixedRotation: true,
@@ -262,8 +262,8 @@ export class Player {
     }
 
     // Respawn if fallen off world
-    if (this.body.position.y < -20) {
-      this.teleport(new THREE.Vector3(0, 3, 5))
+    if (this.body.position.y < -50) {
+      this.teleport(new THREE.Vector3(0, 10, 50))
     }
   }
 
