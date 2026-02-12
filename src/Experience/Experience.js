@@ -26,6 +26,12 @@ export class Experience {
       throw new Error('Canvas element not found!')
     }
 
+    // Check WebGL availability
+    const gl = this.canvas.getContext('webgl2') || this.canvas.getContext('webgl')
+    if (!gl) {
+      throw new Error('WebGL is not supported on this device/browser!')
+    }
+
     // Debug mode
     this.debug = window.location.hash === '#debug'
 
@@ -34,40 +40,53 @@ export class Experience {
     this.fpsTime = 0
     this.currentFPS = 60
 
-    // Setup core systems (errors must propagate so they're visible)
-    this.sizes = new Sizes()
-    this.time = new Time()
-    this.scene = new THREE.Scene()
-    this.resources = new Resources(sources)
-    this.physics = new Physics()
-    this.camera = new Camera()
-    this.renderer = new Renderer()
+    // Track initialization state
+    this._initComplete = false
 
-    // World (contains environment, player, portals, etc.)
-    this.world = new World()
+    try {
+      // Setup core systems
+      console.log('📦 Initializing core systems...')
+      this.sizes = new Sizes()
+      this.time = new Time()
+      this.scene = new THREE.Scene()
+      this.resources = new Resources(sources)
+      this.physics = new Physics()
+      this.camera = new Camera()
+      this.renderer = new Renderer()
 
-    // UI Manager (connects DOM to experience)
-    this.uiManager = new UIManager()
+      // World (contains environment, player, portals, etc.)
+      console.log('🌍 Creating world...')
+      this.world = new World()
 
-    // Touch controls for mobile
-    this.touchControls = new TouchControls()
+      // UI Manager (connects DOM to experience)
+      console.log('🎨 Setting up UI...')
+      this.uiManager = new UIManager()
 
-    // Event listeners
-    this.sizes.on('resize', () => this.resize())
-    this.time.on('tick', () => this.update())
+      // Touch controls for mobile
+      this.touchControls = new TouchControls()
 
-    // Resources loaded
-    this.resources.on('ready', () => {
-      this.onReady()
-    })
+      // Event listeners
+      this.sizes.on('resize', () => this.resize())
+      this.time.on('tick', () => this.update())
 
-    // Hide loading screen immediately — no eager-loaded resources
-    this.hideLoadingScreen()
+      // Resources loaded
+      this.resources.on('ready', () => {
+        this.onReady()
+      })
+
+      this._initComplete = true
+      console.log('✅ Experience initialization complete — scene objects:', this.scene.children.length)
+    } catch (initError) {
+      console.error('❌ Experience initialization error:', initError)
+      // Re-throw so main.js can catch it
+      throw initError
+    } finally {
+      // ALWAYS hide loading screen, even if there was an error
+      this.hideLoadingScreen()
+    }
 
     // Auto-hide the controls panel after 5 seconds
     this.autoHideControls()
-
-    console.log('✅ Experience ready — scene objects:', this.scene.children.length)
   }
 
   onReady() {

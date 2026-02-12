@@ -69,7 +69,9 @@ export class World {
 
     const gltfLoader = new GLTFLoader()
     const dracoLoader = new DRACOLoader()
-    dracoLoader.setDecoderPath('/draco/')
+    // Use relative path for GitHub Pages compatibility
+    const basePath = import.meta.env.BASE_URL || './'
+    dracoLoader.setDecoderPath(`${basePath}draco/`)
     gltfLoader.setDRACOLoader(dracoLoader)
 
     gltfLoader.load(

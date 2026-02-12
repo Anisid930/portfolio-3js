@@ -30,7 +30,9 @@ export class Resources extends EventEmitter {
     
     // Draco loader for compressed models
     this.loaders.dracoLoader = new DRACOLoader()
-    this.loaders.dracoLoader.setDecoderPath('/draco/')
+    // Use relative path for GitHub Pages compatibility
+    const basePath = import.meta.env.BASE_URL || './'
+    this.loaders.dracoLoader.setDecoderPath(`${basePath}draco/`)
     this.loaders.gltfLoader.setDRACOLoader(this.loaders.dracoLoader)
   }
 
